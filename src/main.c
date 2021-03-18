@@ -25,7 +25,6 @@ void end_exec(int signum){
     free(dev);
     close_csv();
     fechaUART(uart0);
-    endwin();
     sleep(1);
     exit(0);
 }
