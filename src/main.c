@@ -10,6 +10,7 @@
 #include <string.h>
 #include <signal.h>
 #include <time.h>
+#include <ncurses.h>
 
 int t=1;
 int two_sec=0;
@@ -25,6 +26,7 @@ void end_exec(int signum){
     free(dev);
     close_csv();
     fechaUART(uart0);
+    endwin();
     sleep(1);
     exit(0);
 }
@@ -34,7 +36,7 @@ int main(int argc, const char * argv[]) {
     alarm(1);
 
     signal(SIGINT, end_exec);
-    signal(SIGSTOP, end_exec);
+    signal(SIGTSTP, end_exec);
 
     time_t rawtime;
     struct tm * timeinfo;
@@ -57,6 +59,18 @@ int main(int argc, const char * argv[]) {
     
     double temp_intst;
     
+    initscr();
+
+    int max_y, max_x;
+
+    getmaxyx(stdscr, max_y, max_x);
+    
+    WINDOW *interface = newwin(10,50,max_y/2-5,max_x/2-25);
+    //WINDOW *input = newwin(3,50,max_y/2-15,max_x/2-50);
+    refresh();
+
+    box(interface, 0, 0);
+
     while(1){
         if(t==1){
             t=0;
@@ -82,7 +96,7 @@ int main(int argc, const char * argv[]) {
             snprintf(line1_string, 9, "TR:%0.2lf", tr);
             snprintf(line2_string, 17, "TI:%0.2lfTE:%0.2lf", ti, te);
 
-            printf("|%f|%f|%f|\n",tr,ti,te);
+            //printf("|%f|%f|%f|\n",tr,ti,te);
 
             set_i2c_addr_lcd();
             lcdLoc(0x80);
@@ -93,7 +107,7 @@ int main(int argc, const char * argv[]) {
             init_pwd(4,5);
             pid_atualiza_referencia(tr);
             temp_intst = pid_controle((double)ti);
-            printf("|%lf|\n",temp_intst);
+            //printf("|%lf|\n",temp_intst);
             control_temp(temp_intst);
 
             if(two_sec==2){
@@ -105,7 +119,12 @@ int main(int argc, const char * argv[]) {
                     create_csv(asctime (timeinfo),ti,te,tr,0,(-1)*(temp_intst));
                 }
             }
-    
+
+            mvwprintw(interface, 1, 13, "Temperatura Interna: %.2f",ti);
+            mvwprintw(interface, 2, 13, "Temperatura Externa: %.2f",te);
+            mvwprintw(interface, 3, 11, "Temperatura Referencia: %.2f",tr);
+            mvwprintw(interface, 4, 14, "Intensidade PWD: %.2f",temp_intst);
+            wrefresh(interface);
         }
         
 
