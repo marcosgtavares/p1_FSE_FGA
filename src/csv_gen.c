@@ -23,5 +23,6 @@ void create_csv(char *d_h, double ti, double te, double tr, double res, double f
     }
 }
 void close_csv(){
+    fprintf(fp, "%c", '\0');
     fclose(fp);
 }
