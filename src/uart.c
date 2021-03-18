@@ -16,25 +16,25 @@
 int writeB(int uart0, unsigned char xA){
     unsigned char codigo_int[7]={adrss,wriCod,xA,0x01,0x00,0x04,0x02};//Preparando os primeiros 7 bytes
     unsigned char msg[9];
-    printf("Buffers de memória criados!\n");
+    //printf("Buffers de memória criados!\n");
     short crc = calcula_CRC(codigo_int, 7);//Calculando o CRC com base nos primeiros 7 bytes
-    printf("CRC calculado!\n");
+    //printf("CRC calculado!\n");
     memcpy(msg, codigo_int, 7);//Preparando a mesagem ao colocar os primeiros 7 bytes
-    printf("Mensagem criada P1\n");
+    //printf("Mensagem criada P1\n");
     memcpy(&msg[7], &crc, 2);//Finalizando a mensagem ao colcoar os ultimos 2 bytes(CRC)
-    printf("Mensagem criada P2\n");
+    //printf("Mensagem criada P2\n");
     if (uart0 != -1)
     {
-        printf("Escrevendo caracteres na UART ...");
+        //printf("Escrevendo caracteres na UART ...");
         int count = write(uart0, &msg[0], 9);
         if (count < 0)
         {
-            printf("UART TX error\n");
+            //printf("UART TX error\n");
             return -1;
         }
         else
         {
-            printf("escrito.\n");
+            //printf("escrito.\n");
             return 1;
         }
     }
@@ -84,12 +84,12 @@ float readB(int uart0){
         int rx_length = read(uart0, (void*)rx_buffer, 255);      //Filestream, buffer to store in, number of bytes to read (max)
         if (rx_length < 0)
         {
-            printf("Erro na leitura.\n"); //An error occured (will occur if there are no bytes)
+            //printf("Erro na leitura.\n"); //An error occured (will occur if there are no bytes)
             return -1;
         }
         else if (rx_length == 0)
         {   
-            printf("Nenhum dado disponível.\n"); //No data waiting
+            //printf("Nenhum dado disponível.\n"); //No data waiting
             return -1;
         }
         else
@@ -102,14 +102,14 @@ float readB(int uart0){
             memcpy(&receivedCrc,&rx_buffer[rx_length-2],2);//Recuperando o CRC do buffer
             if(receivedCrc==crc){//Comparando o CRC 
                 dados = (float *)malloc(1*sizeof(float)); 
-                printf("CRC valido.\n");
+                //printf("CRC valido.\n");
                 memcpy(dados,&rx_buffer[3],rx_length-5);
                 float val = *dados;
                 free(dados);
                 return val;
             }
             else{
-                printf("CRC invalido.\n");
+                //printf("CRC invalido.\n");
                 return -1;
             }
 
@@ -124,11 +124,11 @@ int abreUART(){
     uart0_filestream = open("/dev/serial0", O_RDWR | O_NOCTTY | O_NDELAY);      //Open in non blocking read/write mode
     if (uart0_filestream == -1)
     {
-        printf("Erro - Não foi possível iniciar a UART.\n");
+        //printf("Erro - Não foi possível iniciar a UART.\n");
     }
     else
     {
-        printf("UART inicializada!\n");
+        //printf("UART inicializada!\n");
     }    
     struct termios options;
     tcgetattr(uart0_filestream, &options);
