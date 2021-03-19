@@ -43,7 +43,7 @@ int main(int argc, const char * argv[]) {
     timeinfo = localtime ( &rawtime );//Captura de tempo para criação do nome do arquivo csv
     create_csv(asctime (timeinfo),0,0,0,0,0);//Criação do arquivo csv
 
-    if (wiringPiSetup () == -1) exit (1); // Necessario para o uso do barramento i2c
+    wiringPiSetup(); // Necessario para o uso do barramento i2c
 
     struct bme280_data comp_data;
     dev = init_sensor();
