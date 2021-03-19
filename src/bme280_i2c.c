@@ -1,5 +1,5 @@
-#include "bme280.h"
-#include "bme280_i2c.h"
+#include "../inc/bme280.h"
+#include "../inc/bme280_i2c.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -74,7 +74,7 @@ struct bme280_dev* init_sensor(){
     uint8_t dev_addr = BME280_I2C_ADDR_PRIM;
     struct bme280_dev *dev=(struct bme280_dev *)malloc(sizeof(struct bme280_dev));
 
-    if (wiringPiSetup () == -1) exit (1); 
+    wiringPiSetup(); 
     fd = wiringPiI2CSetup(0x76);
 
     /*if ((fd = open(IIC_Dev, O_RDWR)) < 0) {
@@ -96,7 +96,7 @@ struct bme280_dev* init_sensor(){
 }
 
 void set_i2c_addr_sensor(struct bme280_dev *dev){
-  if (wiringPiSetup () == -1) exit (1); 
+  wiringPiSetup(); 
   fd = wiringPiI2CSetup(0x76);
   int rslt;
   rslt = bme280_init(dev);

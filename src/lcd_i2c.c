@@ -16,7 +16,7 @@
 #include <wiringPi.h>
 #include <stdlib.h>
 #include <stdio.h>
-#include "lcd_i2c.h"
+#include "../inc/lcd_i2c.h"
 
 
 // Define some device parameters
@@ -108,7 +108,7 @@ void lcd_toggle_enable(int bits)   {
 
 void lcd_init()   {
   // Initialise display
-  if (wiringPiSetup () == -1) exit (1); 
+  wiringPiSetup();
   fd = wiringPiI2CSetup(I2C_ADDR);
   lcd_byte(0x33, LCD_CMD); // Initialise
   lcd_byte(0x32, LCD_CMD); // Initialise
@@ -120,6 +120,6 @@ void lcd_init()   {
 }
 
 void set_i2c_addr_lcd(){
-  if (wiringPiSetup () == -1) exit (1); 
+  wiringPiSetup();
   fd = wiringPiI2CSetup(I2C_ADDR);
 }

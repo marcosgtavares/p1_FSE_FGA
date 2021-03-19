@@ -1,13 +1,13 @@
 #include <stdio.h>
 #include <softPwm.h>  
 #include <wiringPi.h> 
-#include "gpio_pwd.h"
+#include "../inc/gpio_pwd.h"
 
 int pin_res;
 int pin_fan;
 
 void init_pwd(int set_pin_res, int set_pin_fan){
-    if (wiringPiSetup () == -1) exit (1);
+    wiringPiSetup();
     pin_res=set_pin_res;
     pinMode(set_pin_res,OUTPUT);	
 	softPwmCreate(set_pin_res,1,100);

@@ -1,4 +1,4 @@
-#include "pid.h"
+#include "../inc/pid.h"
 #include <stdio.h>
 
 double saida_medida, sinal_de_controle;

@@ -4,8 +4,8 @@
 #include <fcntl.h>          //Used for UART
 #include <termios.h>        //Used for UART
 #include <string.h>
-#include "crc16.h"
-#include "uart.h"
+#include "../inc/crc16.h"
+#include "../inc/uart.h"
 
 
 #define adrss 0x01
