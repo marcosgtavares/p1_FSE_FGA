@@ -33,7 +33,6 @@ void end_exec(int signum){
 
 int main(int argc, const char * argv[]) {
     signal(SIGALRM, time_sec);
-    alarm(1);
 
     signal(SIGINT, end_exec);
     signal(SIGTSTP, end_exec);
@@ -53,26 +52,45 @@ int main(int argc, const char * argv[]) {
     lcd_init();
 
     float ti,tr,te;
+    ti=0;
+    tr=0;
+    te=0;
 
     char line1_string[10];
     char line2_string[20];
     
     double temp_intst;
-    
+
     initscr();
 
+    halfdelay(1);
+    
     int max_y, max_x;
 
     getmaxyx(stdscr, max_y, max_x);
     
     WINDOW *interface = newwin(10,50,max_y/2-5,max_x/2-25);
-    //WINDOW *input = newwin(3,50,max_y/2-15,max_x/2-50);
-    refresh();
+    WINDOW *input = newwin(3,50,max_y/2+5,max_x/2-25);
 
+    refresh();
     box(interface, 0, 0);
+    box(input, 0, 0);
+    mvwprintw(interface, 1, 13, "Temperatura Externa:");
+    mvwprintw(interface, 2, 13, "Temperatura Interna:");
+    mvwprintw(interface, 3, 11, "Temperatura Referencia:");
+    mvwprintw(interface, 4, 14, "Intensidade PWD:");
+    mvwprintw(interface, 5, 20, "Segundos:");
+    mvwprintw(input, 1, 12, "Temperatura Referencia:");
+    wrefresh(interface);
+    wrefresh(input);
+    char f_char[10];
+    int j=0;
+    int i=0;
+    int type_param=0;
 
     while(1){
         if(t==1){
+            
             t=0;
             two_sec++;
             alarm(1);
@@ -84,7 +102,26 @@ int main(int argc, const char * argv[]) {
             
             uart0 = abreUART();
             ti = solrecData(uart0, 0xC1);
-            tr = solrecData(uart0, 0xC2);
+            if(type_param==1){
+                type_param=0;
+                j=0;
+                if(f_char[0]!='p'){
+                    tr=(float)atof(f_char);
+                    mvwprintw(input, 1, 12, "Temperatura Referencia:%.2f",tr);
+                    wrefresh(input);
+                    move(max_y/2+6,max_x/2+10);
+                }
+                else{
+                    tr = solrecData(uart0, 0xC2);
+                    mvwprintw(input, 1, 12, "Temperatura Referencia:%.2f",tr);
+                    wrefresh(input);
+                    move(max_y/2+6,max_x/2+10);
+                }
+                
+            }
+            if(tr==0){
+                tr = solrecData(uart0, 0xC2);
+            }
             fechaUART(uart0);
             
             set_i2c_addr_sensor(dev);
@@ -93,8 +130,8 @@ int main(int argc, const char * argv[]) {
 		    rslt = bme280_get_sensor_data(BME280_ALL, &comp_data, dev);
             te = comp_data.temperature;
 
-            snprintf(line1_string, 9, "TR:%0.2lf", tr);
-            snprintf(line2_string, 17, "TI:%0.2lfTE:%0.2lf", ti, te);
+            snprintf(line1_string, 9, "TR:%0.1lf", tr);
+            snprintf(line2_string, 17, "TI:%0.1lf TE:%0.1lf", ti, te);
 
             //printf("|%f|%f|%f|\n",tr,ti,te);
 
@@ -123,8 +160,30 @@ int main(int argc, const char * argv[]) {
             mvwprintw(interface, 1, 13, "Temperatura Interna: %.2f",ti);
             mvwprintw(interface, 2, 13, "Temperatura Externa: %.2f",te);
             mvwprintw(interface, 3, 11, "Temperatura Referencia: %.2f",tr);
+            mvwprintw(interface, 4, 14, "Intensidade PWD:        ");
             mvwprintw(interface, 4, 14, "Intensidade PWD: %.2f",temp_intst);
+            mvwprintw(interface, 5, 18, "Segundos:%d",i);
+            move(max_y/2+6,max_x/2+10+j);
             wrefresh(interface);
+            i++;
+            
+        }
+        if( type_param==0){
+            if((f_char[j]=getch())=='\n'){
+                f_char[j]='\0';
+                move(max_y/2+6,max_x/2+10+j);
+                wrefresh(input);
+                j=0; 
+                type_param=1;
+            }
+            else if((f_char[j]!=-1) && ((f_char[j]>=48 && f_char[j]<=57) || (f_char[j]>=65 && f_char[j]<=90) || (f_char[j]>=97 && f_char[j]<=122) || f_char[j]==46)){
+                if(j==0 ){
+                    mvwprintw(input, 1, 12, "Input  T Referencia:%c            ",f_char[0]);
+                    move(max_y/2+6,max_x/2+11);
+                    wrefresh(input);
+                }
+                j++;
+            }
         }
         
 
