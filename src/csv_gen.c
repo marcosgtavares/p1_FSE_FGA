@@ -31,7 +31,12 @@ void create_csv(char *d_h, double ti, double te, double tr, double res, double f
         fprintf(fp, "Data e hora,TI,TE,TR,Resistor,Ventoinha\n");
     }
     else{
-        fprintf(fp, "%s,%lf,%lf,%lf,%lf,%lf\n", d_h, ti, te, tr, res, fan);
+        char str[24];
+        for(int j;j<23;j++){
+            str[j]=d_h[j];
+        }
+        str[23]='\0';
+        fprintf(fp, "%s,%lf,%lf,%lf,%lf,%lf\n", str, ti, te, tr, res, fan);
     }
 }
 void close_csv(){
