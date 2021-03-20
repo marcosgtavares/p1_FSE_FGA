@@ -113,6 +113,7 @@ int set_i2c_addr_lcd(){
 int lcd_init()   {
   // Initialise display
   fd = set_i2c_addr_lcd();
+
   lcd_byte(0x33, LCD_CMD); // Initialise
   lcd_byte(0x32, LCD_CMD); // Initialise
   lcd_byte(0x06, LCD_CMD); // Cursor move direction

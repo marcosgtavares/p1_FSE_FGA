@@ -25,7 +25,7 @@ void end_exec(int signum){
     control_temp(0);//Desliga a ventuinha e a resistencia
     free(dev);//libera a memoria alocada para dev
     close_csv();//Fecha o arquivo csv
-    fechaUART(uart0);//Fecha a uart caso tenha encerrado antes dessa parte no codigo
+    fechaUART(uart0);//Fecha a uart
     endwin();//Fecha as janelas
     sleep(1);//Espera as ações aconterem
     exit(0);
@@ -51,6 +51,8 @@ int main(int argc, const char * argv[]) {
 
     struct bme280_data comp_data;
     dev = init_sensor();
+    dev->delay_us(100, dev->intf_ptr);
+    int fd_bme280=init_fd_bme280();
     int rslt = stream_sensor_data_normal_mode(dev);//Inicialização e configuração inicial do sensor bme280
     dev->delay_us(100, dev->intf_ptr);
     int fd_bme280;
@@ -60,8 +62,12 @@ int main(int argc, const char * argv[]) {
     char line1_string[10];
     char line2_string[20];// Strings para escria na tela lcd
     
+
     init_pwd(4,5);//Inicia a gpio e prepara o PWD nas portas correspondentes a 23 e 24 do gpio para o wiringpi
     double temp_intst;// Intensidade do PWD
+
+    float ti=0,tr=0,te=0;//Variaveis de temperatura
+
 
     initscr();// Incia a janela do ncurses
 
@@ -135,6 +141,7 @@ int main(int argc, const char * argv[]) {
             snprintf(line2_string, 17, "TI:%0.1lf TE:%0.1lf", ti, te);
 
             fd_lcd=set_i2c_addr_lcd();//Abre a porta da tela lcd
+
             lcdLoc(0x80);
             typeln(line1_string);
             lcdLoc(0xC0); 

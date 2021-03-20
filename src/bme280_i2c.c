@@ -61,6 +61,7 @@ struct bme280_dev* init_sensor(){
     struct bme280_dev *dev=(struct bme280_dev *)malloc(sizeof(struct bme280_dev));
 	fd = wiringPiI2CSetup(0x76);
 
+
     dev->intf_ptr = &dev_addr;
     dev->intf = BME280_I2C_INTF;
     dev->read = &user_i2c_read;
@@ -74,4 +75,5 @@ struct bme280_dev* init_sensor(){
 int set_i2c_addr_sensor(){
   	fd = wiringPiI2CSetup(0x76);
 	return fd;
+
 }

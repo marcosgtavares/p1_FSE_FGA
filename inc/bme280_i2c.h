@@ -12,4 +12,5 @@ int8_t stream_sensor_data_normal_mode(struct bme280_dev *dev);
 struct bme280_dev* init_sensor();
 int set_i2c_addr_sensor();
 
+
 #endif /* BME280_H_ */

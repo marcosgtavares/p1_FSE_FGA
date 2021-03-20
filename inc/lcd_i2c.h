@@ -13,4 +13,5 @@ void typeln(const char *s);
 void typeChar(char val);
 int set_i2c_addr_lcd();
 
+
 #endif /* LCD_I2C_H_ */

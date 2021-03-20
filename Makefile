@@ -1,6 +1,6 @@
 EXEC = P1
 CXX = gcc             
-OPTS = -O2 -Wall -g   
+OPTS = -o   
 CFLAGS = $(OPTS)      
 LDFLAGS = -lwiringPi -lncurses        
 
