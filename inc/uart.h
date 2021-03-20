@@ -8,4 +8,4 @@ void fechaUART(int uart0);
 float solrecData(int uart0, unsigned char xA);
 
 
-#endif 
+#endif /* UART_H_ */

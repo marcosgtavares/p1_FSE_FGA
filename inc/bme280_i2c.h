@@ -10,7 +10,6 @@ int8_t user_i2c_write(uint8_t reg_addr, const unsigned char *reg_data, uint32_t 
 void print_sensor_data(struct bme280_data *comp_data);
 int8_t stream_sensor_data_normal_mode(struct bme280_dev *dev);
 struct bme280_dev* init_sensor();
-void set_i2c_addr_sensor(struct bme280_dev *dev);
+int set_i2c_addr_sensor();
 
-
-#endif
+#endif /* BME280_H_ */
