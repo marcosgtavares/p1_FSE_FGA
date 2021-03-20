@@ -18,7 +18,6 @@ void create_csv(char *d_h, double ti, double te, double tr, double res, double f
         temp[i+4]='s';
         temp[i+5]='v';
         temp[i+6]='\0';
-        //filename=strcat(temp,"scsv");
         i=0;
         while(temp[i]!='\0'){
             if(temp[i]==' '){
@@ -29,6 +28,7 @@ void create_csv(char *d_h, double ti, double te, double tr, double res, double f
         char f_path[30];
         snprintf(f_path, 30, "../log/%s", temp);
         fp=fopen(f_path,"w");
+        fprintf(fp, "Data e hora,TI,TE,TR,Resistor,Ventoinha\n");
     }
     else{
         fprintf(fp, "%s,%lf,%lf,%lf,%lf,%lf\n", d_h, ti, te, tr, res, fan);
