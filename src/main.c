@@ -172,7 +172,7 @@ int main(int argc, const char * argv[]) {
             if((f_char[j]=getch())=='\n'){// Finaliza a string caso receba \n
                 f_char[j]='\0';
                 wrefresh(input);
-                mvwprintw(input, 2, 12, "Quando a TR mudou(s):%d",i+1);
+                mvwprintw(input, 2, 12, "Quando a TR mudou(s):%d",i);
                 j=0; 
                 type_param=1;//String pronta
             }
