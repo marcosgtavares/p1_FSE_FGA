@@ -74,8 +74,7 @@ struct bme280_dev* init_sensor(){
     uint8_t dev_addr = BME280_I2C_ADDR_PRIM;
     struct bme280_dev *dev=(struct bme280_dev *)malloc(sizeof(struct bme280_dev));
 
-    wiringPiSetup(); 
-    fd = wiringPiI2CSetup(0x76);
+    
 
     /*if ((fd = open(IIC_Dev, O_RDWR)) < 0) {
         printf("Failed to open the i2c bus");
@@ -95,9 +94,13 @@ struct bme280_dev* init_sensor(){
     return dev;
 }
 
-void set_i2c_addr_sensor(struct bme280_dev *dev){
-  wiringPiSetup(); 
-  fd = wiringPiI2CSetup(0x76);
-  int rslt;
-  rslt = bme280_init(dev);
+int init_fd_bme280(){
+    //wiringPiSetup(); 
+    fd = wiringPiI2CSetup(0x76);
+    return fd;
+}
+
+void set_i2c_addr_sensor(int fd_rec){
+  fd = fd_rec;
+  //bme280_init(dev);
 }

@@ -25,7 +25,7 @@ void end_exec(int signum){
     control_temp(0);//Desliga a ventuinha e a resistencia
     free(dev);//libera a memoria alocada para dev
     close_csv();//Fecha o arquivo csv
-    fechaUART(uart0);//Fecha a uart caso tenha encerrado antes dessa parte no codigo
+    fechaUART(uart0);//Fecha a uart
     endwin();//Fecha as janelas
     sleep(1);//Espera as ações aconterem
     exit(0);
@@ -47,20 +47,26 @@ int main(int argc, const char * argv[]) {
 
     struct bme280_data comp_data;
     dev = init_sensor();
+    dev->delay_us(100, dev->intf_ptr);
+    int fd_bme280=init_fd_bme280();
     int rslt = stream_sensor_data_normal_mode(dev);//Inicialização e configuração inicial do sensor bme280
+    
 
-    lcd_init();//Inicialização inicial da tela lcd
+    int fd_lcd=lcd_init();//Inicialização inicial da tela lcd
+    char line1_string[10];
+    char line2_string[20];// Strings para escria na tela lcd
+
+    uart0 = abreUART();// Abre a uart para solicitar os dados de TE e TR
+
+    init_pwd(4,5);//Inicia a gpio e prepara o PWD nas portas correspondentes a 23 e 24 do gpio para o wiringpi
+    double temp_intst;// Intensidade do PWD
 
     float ti=0,tr=0,te=0;//Variaveis de temperatura
 
-    char line1_string[10];
-    char line2_string[20];// Strings para escria na tela lcd
-    
-    double temp_intst;// Intensidade do PWD
 
     initscr();// Incia a janela do ncurses
 
-    halfdelay(1);// Para a captura das teclas dentro do loop
+    nodelay(stdscr, TRUE);// Para a captura das teclas dentro do loop
     
     int max_y, max_x;
 
@@ -95,7 +101,7 @@ int main(int argc, const char * argv[]) {
                 timeinfo = localtime ( &rawtime );
             }
             
-            uart0 = abreUART();// Abre a uart para solicitar os dados de TE e TR
+            
             ti = solrecData(uart0, 0xC1);//Solicita TE
             if(use_ptc==1){
                 tr = solrecData(uart0, 0xC2);//Solicita TR
@@ -106,24 +112,26 @@ int main(int argc, const char * argv[]) {
                 j=0;
                 if(f_char[0]!='p'){//Caso seja p a TR vira do potenciometro
                     tr=(float)atof(f_char);
-                    mvwprintw(input, 1, 12, "Input Temp  Referencia:%.2f",tr);
-                    wrefresh(input);
-                    move(max_y/2+6,max_x/2+10);// Necessario para controlar o cursor
                 }
                 else{
                     tr = solrecData(uart0, 0xC2);
-                    mvwprintw(input, 1, 12, "Input Temp  Referencia:p");
-                    wrefresh(input);
-                    move(max_y/2+6,max_x/2+10);// Necessario para controlar o cursor
                     use_ptc=1;
                 }
-                
+                if(tr>100){
+                    tr=100;
+                }
+                if(tr<te){
+                    tr=te;
+                }
+                mvwprintw(input, 1, 12, "Input Temp  Referencia:%.2f",tr);
+                wrefresh(input);
+                move(max_y/2+6,max_x/2+10);// Necessario para controlar o cursor
             }
-            fechaUART(uart0);
+            //fechaUART(uart0);
             
-            set_i2c_addr_sensor(dev);//Inicia o sensor bme280
-            int rslt = stream_sensor_data_normal_mode(dev);
-            dev->delay_us(100, dev->intf_ptr);
+            set_i2c_addr_sensor(fd_bme280);//Inicia o sensor bme280
+            //int rslt = stream_sensor_data_normal_mode(dev);
+            
 		    rslt = bme280_get_sensor_data(BME280_ALL, &comp_data, dev);
             te = comp_data.temperature;
 
@@ -132,13 +140,12 @@ int main(int argc, const char * argv[]) {
 
             //printf("|%f|%f|%f|\n",tr,ti,te);
 
-            set_i2c_addr_lcd();//Inicia a tela lcd
+            set_i2c_addr_lcd(fd_lcd);//Inicia a tela lcd
             lcdLoc(0x80);
             typeln(line1_string);
             lcdLoc(0xC0); 
             typeln(line2_string);
 
-            init_pwd(4,5);//Inicia a gpio e prepara o PWD nas portas correspondentes a 23 e 24 do gpio para o wiringpi
             pid_atualiza_referencia(tr);
             temp_intst = pid_controle((double)ti);
             //printf("|%lf|\n",temp_intst);

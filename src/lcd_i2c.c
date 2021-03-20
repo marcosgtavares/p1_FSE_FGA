@@ -106,9 +106,9 @@ void lcd_toggle_enable(int bits)   {
 }
 
 
-void lcd_init()   {
+int lcd_init()   {
   // Initialise display
-  wiringPiSetup();
+  //wiringPiSetup();
   fd = wiringPiI2CSetup(I2C_ADDR);
   lcd_byte(0x33, LCD_CMD); // Initialise
   lcd_byte(0x32, LCD_CMD); // Initialise
@@ -117,9 +117,9 @@ void lcd_init()   {
   lcd_byte(0x28, LCD_CMD); // Data length, number of lines, font size
   lcd_byte(0x01, LCD_CMD); // Clear display
   delayMicroseconds(500);
+  return fd;
 }
 
-void set_i2c_addr_lcd(){
-  wiringPiSetup();
-  fd = wiringPiI2CSetup(I2C_ADDR);
+void set_i2c_addr_lcd(int fd_rec){
+  fd=fd_rec;
 }

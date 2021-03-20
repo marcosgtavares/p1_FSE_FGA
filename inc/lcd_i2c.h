@@ -2,7 +2,7 @@
 #ifndef LCD_I2C_H_
 #define LCD_I2C_H_
 
-void lcd_init(void);
+int lcd_init(void);
 void lcd_byte(int bits, int mode);
 void lcd_toggle_enable(int bits);
 void typeInt(int i);
@@ -11,6 +11,6 @@ void lcdLoc(int line); //move cursor
 void ClrLcd(void); // clr LCD return home
 void typeln(const char *s);
 void typeChar(char val);
-void set_i2c_addr_lcd();
+void set_i2c_addr_lcd(int fd_rec);
 
 #endif /* LCD_I2C_H_ */

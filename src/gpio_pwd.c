@@ -7,7 +7,7 @@ int pin_res;
 int pin_fan;
 
 void init_pwd(int set_pin_res, int set_pin_fan){
-    wiringPiSetup();
+    //wiringPiSetup();
     pin_res=set_pin_res;
     pinMode(set_pin_res,OUTPUT);	
 	softPwmCreate(set_pin_res,1,100);
