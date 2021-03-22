@@ -5,13 +5,18 @@ Para compilar o programa insira make no terminal.
 
 Para iniciar o programa vá para a pasta bin (cd bin) e execute o binario P1(./P1).
 
-Para mudar a TR basta digita o numero desejado e dar enter.
+Para mudar a TR basta digita o numero desejado e dar enter(ex: 35.21).
 
-Para utilizar a TR fornecida pelo potenciometro digite 'p' e de enter.
+Para utilizar a TR fornecida pelo potenciometro digite 'p' e de enter(desde que p seja o primeiro caractere irá funcionar).
+
+Para mudas as constantes Kp, Ki e Kd digite no formato "kxn" onde n é um double(ex: 2.01232).
+Exemplo: "kp31.24" muda a constante kp para 31.24.
+
+Caso o input seja invalido ele não sera computado e N sera impresso na area de input.
 
 Não há como utilizar backspace.
 
-As unicas teclas aceitas são numeros de 0 a 9, '.' e 'p'.
+As unicas teclas aceitas são numeros de 0 a 9, '.','d','i','k','p'.
 
 Ao inserir um numero menor que a TE a TR sera igual a TE.
 

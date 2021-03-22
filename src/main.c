@@ -81,15 +81,18 @@ int main(int argc, const char * argv[]) {
     mvwprintw(interface, 2, 13, "Temperatura Interna:");
     mvwprintw(interface, 3, 11, "Temperatura Referencia:");
     mvwprintw(interface, 4, 14, "Intensidade PWD:");
-    mvwprintw(interface, 5, 20, "Segundos:");
-    mvwprintw(input, 1, 12, "Input Temp  Referencia:");// Inicializa o texto inicial da janela
+    mvwprintw(interface, 5, 21, "Segundos:");
+    mvwprintw(interface, 6, 24, "Kp:");
+    mvwprintw(interface, 7, 24, "Ki:");
+    mvwprintw(interface, 8, 24, "Kd:");
+    mvwprintw(input, 1, 12, "Input Const/Referencia:");// Inicializa o texto inicial da janela
     wrefresh(interface);
     wrefresh(input);
     char f_char[10];// Para a captura de characteres usando getch()
     int j=0,i=0;// j é o contador de characteres em f_char e i é o contador de tempo
     int use_ptc=1;// Usar o potenciometro ou não
     int type_param=0;// String f_char pronta ou não
-
+    double curr_kp=5,curr_ki=1,curr_kd=5;
     while(1){
         if(t==1){//t é igual a um de começo e é igual a um a cada segundo
             move(max_y/2+6,max_x/2+10+j);
@@ -111,24 +114,48 @@ int main(int argc, const char * argv[]) {
                 tr = solrecData(uart0, 0xC2);//Solicita TR
             }
             if(type_param==1){//String f_cha pronta ou não
-                use_ptc=0;
                 type_param=0;
-                if(f_char[0]!='p'){//Caso seja p a TR vira do potenciometro
-                    tr=(float)atof(f_char);
+                
+                if(f_char[0]=='k'){//Caso seja k o proximo caractere é checado para detectar a constante a ser alterada
+                    if(strstr(f_char+2, "d")!=NULL || strstr(f_char+2, "i")!=NULL || strstr(f_char+2, "k")!=NULL || strstr(f_char+2, "p")!=NULL ){
+                        mvwprintw(input, 1, 12, "Input Const/Referencia:N       ");
+                        wrefresh(input);
+                    }
+                    else if(f_char[1]=='p'){
+                        curr_kp=atof(f_char+2);  
+                    }
+                    else if(f_char[1]=='i'){
+                        curr_ki=atof(f_char+2);
+                    }
+                    else if(f_char[1]=='d'){
+                        curr_kd=atof(f_char+2);
+                    }
+                    else{
+                        mvwprintw(input, 1, 12, "Input Const/Referencia:N       ");
+                        wrefresh(input);
+                    }
+                    pid_configura_constantes(curr_kp,curr_ki,curr_kd);
+                    
                 }
-                else{
+                else if(f_char[0]=='p'){//Caso seja p a TR vira do potenciometro
                     tr = solrecData(uart0, 0xC2);
                     use_ptc=1;
                 }
-                if(tr<te){
-                    tr=te;
+                else if(strstr(f_char, "d")==NULL && strstr(f_char, "i")==NULL && strstr(f_char, "k")==NULL && strstr(f_char, "p")==NULL ){//Nao possui de 'i','d','k' e 'p'
+                    use_ptc=0;
+                    tr=(float)atof(f_char);
                 }
-                if(tr>100){
-                    tr=100;
+                else{
+                    mvwprintw(input, 1, 12, "Input Const/Referencia:N       ");
+                    wrefresh(input);
                 }
-                mvwprintw(input, 1, 12, "Input Temp  Referencia:%.2f",tr);
-                wrefresh(input);
                 
+            }
+            if(tr<te){
+                tr=te;
+            }
+            if(tr>100){
+                tr=100;
             }
 
             snprintf(line1_string, 9, "TR:%0.1lf", tr);//Prepara as strings para escrever na tela lcd
@@ -161,7 +188,10 @@ int main(int argc, const char * argv[]) {
             mvwprintw(interface, 3, 11, "Temperatura Referencia: %.2f",tr);
             mvwprintw(interface, 4, 14, "Intensidade PWD:        ");
             mvwprintw(interface, 4, 14, "Intensidade PWD: %.2f",temp_intst);
-            mvwprintw(interface, 5, 18, "Segundos:%d",i);
+            mvwprintw(interface, 5, 21, "Segundos:%d",i);
+            mvwprintw(interface, 6, 24, "Kp:%.2f",curr_kp);
+            mvwprintw(interface, 7, 24, "Ki:%.2f",curr_ki);
+            mvwprintw(interface, 8, 24, "Kd:%.2f",curr_kd);
             wrefresh(interface);
             wrefresh(input);
             i++;
@@ -172,14 +202,14 @@ int main(int argc, const char * argv[]) {
             if((f_char[j]=getch())=='\n'){// Finaliza a string caso receba \n
                 f_char[j]='\0';
                 wrefresh(input);
-                mvwprintw(input, 2, 12, "Quando a TR mudou(s):%d",i);
+                mvwprintw(input, 2, 12, "Quando VAR  mudou(s):%d",i);
                 j=0; 
                 type_param=1;//String pronta
             }
             /*Estava recebendo algum tipo de input da raspberry então tive que limitar os caracteres aceitos*/
-            else if((f_char[j]>=48 && f_char[j]<=57) || f_char[j]==112 || f_char[j]==46){
+            else if((f_char[j]>=48 && f_char[j]<=57) || f_char[j]==112 || f_char[j]==46 || f_char[j]==100 || f_char[j]==105 || f_char[j]==107){
                 if(j==0 ){// Necessario para controlar o cursor
-                    mvwprintw(input, 1, 12, "Input Temp  Referencia:%c            ",f_char[0]);
+                    mvwprintw(input, 1, 12, "Input Const/Referencia:%c            ",f_char[0]);
                     wrefresh(input);
                 }
                 j++;//Incrementa a posição na string f_char
