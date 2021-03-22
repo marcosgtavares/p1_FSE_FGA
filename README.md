@@ -26,6 +26,10 @@ O programa se encerra com ctrl+c ou ctrl+z.
 
 O arquivo csv gerado se encontra na pasta log.
 
+
+
+Graficos Kp=5, Ki=1, Kd=5;
+
 Grafico de Temperaturas(TI,TE,TR) X Tempo.
 ![TemperaturesGraph](Graphs/TemperaturesGraph.png)
 
