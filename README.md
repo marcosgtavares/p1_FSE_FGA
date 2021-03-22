@@ -9,7 +9,7 @@ Para mudar a TR basta digita o numero desejado e dar enter(ex: 35.21).
 
 Para utilizar a TR fornecida pelo potenciometro digite 'p' e de enter(desde que p seja o primeiro caractere irá funcionar).
 
-Para mudas as constantes Kp, Ki e Kd digite no formato "kxn" onde n é um double(ex: 2.01232).
+Para mudar as constantes Kp, Ki e Kd digite no formato "kxn", onde n é um double(ex: 2.01232), e de enter.
 Exemplo: "kp31.24" muda a constante kp para 31.24.
 
 Caso o input seja invalido ele não sera computado e N sera impresso na area de input.
